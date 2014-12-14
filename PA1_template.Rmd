@@ -5,12 +5,10 @@ output:
     keep_md: true
     self_contained: no
 ---
-## By: Bhupendra Ajinkya
-GitHub URL: https://github.com/bhupen-a/RepData_PeerAssessment1
 
-SHA-1 Hash: 
 
-```{r prerequisites, message=FALSE, warning=FALSE, echo=FALSE}
+```{r prerequisites, message=FALSE, warning=FALSE, echo=FALSE, results='hide'}
+## Non output code
 ## install dplyr package if it is not installed and load library
 if (!is.element("dplyr", installed.packages()[,1]))
         install.packages("dplyr")

@@ -1,8 +1,5 @@
 # Reproducible Research: Peer Assessment 1
-## By: Bhupendra Ajinkya
-GitHub URL: https://github.com/bhupen-a/RepData_PeerAssessment1
 
-SHA-1 Hash: 
 
 
 
