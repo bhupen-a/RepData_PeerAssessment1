@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<title>Reproducible Research: Peer Assessment 1</title>
+
+<script src="PA1_template_files/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link href="PA1_template_files/bootstrap-2.3.2/css/bootstrap.min.css" rel="stylesheet" />
+<link href="PA1_template_files/bootstrap-2.3.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+<script src="PA1_template_files/bootstrap-2.3.2/js/bootstrap.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="PA1_template_files/highlight/default.css"
+      type="text/css" />
+<script src="PA1_template_files/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div id="header">
+<h1 class="title">Reproducible Research: Peer Assessment 1</h1>
+</div>
+
+
+<div id="by-bhupendra-ajinkya" class="section level2">
+<h2>By: Bhupendra Ajinkya</h2>
+<p>GitHub URL: <a href="https://github.com/bhupen-a/RepData_PeerAssessment1">https://github.com/bhupen-a/RepData_PeerAssessment1</a></p>
+<p>SHA-1 Hash:</p>
+</div>
+<div id="loading-and-preprocessing-the-data" class="section level2">
+<h2>Loading and preprocessing the data</h2>
+<p>Please ensure that activity.zip file is available in the current working directory. Unzip the data file and load the data into activity data frame</p>
+<pre class="r"><code>if(!file.exists(activityFile)){
+        unzip(zipFile)
+}
+activity &lt;- read.csv(activityFile)</code></pre>
+</div>
+<div id="what-is-mean-total-number-of-steps-taken-per-day" class="section level2">
+<h2>What is mean total number of steps taken per day?</h2>
+<div id="make-a-histogram-of-the-total-number-of-steps-taken-each-day" class="section level4">
+<h4>1. Make a histogram of the total number of steps taken each day</h4>
+<p>Summarise the activity data to group by date ignoring the missing values. This summarised data is used to plot the histogram of the total number of steps taken each day.</p>
+<pre class="r"><code>activityByDay &lt;- summarise(group_by(activity, date), totalSteps = sum(steps, na.rm = TRUE))
+hist(activityByDay$totalSteps, main = &quot;Histogram of the total steps taken each day&quot;, xlab = &quot;Total steps&quot;)</code></pre>
+<p><img src="PA1_template_files/figure-html/unnamed-chunk-2.png" alt="plot of chunk unnamed-chunk-2" /></p>
+<p>Note that barplot should not be used here. Please refer to forums for more details: <a href="https://class.coursera.org/repdata-016/forum/thread?thread_id=3">https://class.coursera.org/repdata-016/forum/thread?thread_id=3</a></p>
+</div>
+<div id="calculate-and-report-the-mean-and-median-total-number-of-steps-taken-per-day" class="section level4">
+<h4>2. Calculate and report the mean and median total number of steps taken per day</h4>
+<pre class="r"><code>mean(activityByDay$totalSteps)</code></pre>
+<pre><code>## [1] 9354</code></pre>
+<pre class="r"><code>median(activityByDay$totalSteps)</code></pre>
+<pre><code>## [1] 10395</code></pre>
+</div>
+</div>
+<div id="what-is-the-average-daily-activity-pattern" class="section level2">
+<h2>What is the average daily activity pattern?</h2>
+<div id="make-a-time-series-plot-i.e.type-l-of-the-5-minute-interval-x-axis-and-the-average-number-of-steps-taken-averaged-across-all-days-y-axis" class="section level4">
+<h4>1. Make a time series plot (i.e. type = “l”) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)</h4>
+<p>Summarise the activity data to group by interval ignoring the missing values. Add a new column to indicate time using a dummy date. This summarised data is used to plot the time series graph.</p>
+<pre class="r"><code>activityByInterval &lt;- summarise(group_by(activity, interval), avgSteps = mean(steps, na.rm = TRUE))
+activityByInterval$time &lt;- seq(ISOdate(2000,1,1,0,0,0), by=&quot;5 min&quot;, length.out = length(activityByInterval$interval))
+
+plot(x = activityByInterval$time, y = activityByInterval$avgSteps, type = &quot;l&quot;, xlab = &quot;Time&quot;, ylab =&quot;Average Steps&quot;)</code></pre>
+<p><img src="PA1_template_files/figure-html/unnamed-chunk-4.png" alt="plot of chunk unnamed-chunk-4" /></p>
+</div>
+<div id="which-5-minute-interval-on-average-across-all-the-days-in-the-dataset-contains-the-maximum-number-of-steps" class="section level4">
+<h4>2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?</h4>
+<pre class="r"><code>activityByInterval[which.max(activityByInterval$avgSteps), 1:2]</code></pre>
+<pre><code>## Source: local data frame [1 x 2]
+## 
+##   interval avgSteps
+## 1      835    206.2</code></pre>
+<p>The above 5-minute interval contains the maximum number of steps on average across all the days.</p>
+</div>
+</div>
+<div id="imputing-missing-values" class="section level2">
+<h2>Imputing missing values</h2>
+<div id="calculate-and-report-the-total-number-of-missing-values-in-the-dataset-i.e.the-total-number-of-rows-with-nas." class="section level4">
+<h4>1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs).</h4>
+<pre class="r"><code>sum(!complete.cases(activity))</code></pre>
+<pre><code>## [1] 2304</code></pre>
+<p>The above number indicates the total number of rows with missing values in the dataset.</p>
+</div>
+<div id="devise-a-strategy-for-filling-in-all-of-the-missing-values-in-the-dataset.-the-strategy-does-not-need-to-be-sophisticated.-for-example-you-could-use-the-meanmedian-for-that-day-or-the-mean-for-that-5-minute-interval-etc" class="section level4">
+<h4>2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc</h4>
+<p>The strategy used by me for filling the missing values is to use the mean for that 5-minute interval assuming that the pattern in activity remains more or less same.</p>
+</div>
+<div id="create-a-new-dataset-that-is-equal-to-the-original-dataset-but-with-the-missing-data-filled-in." class="section level4">
+<h4>3. Create a new dataset that is equal to the original dataset but with the missing data filled in.</h4>
+<p>Based on the strategy selected, the activity dataset is merged with the activityByInterval and wherever Steps data is missing, it is filled up by corresponding mean value of the steps for the given interval.</p>
+<pre class="r"><code>activityNew &lt;- merge(activity, select(activityByInterval, interval, avgSteps), by=&quot;interval&quot;)
+activityNew$steps[is.na(activityNew$steps)] &lt;- activityNew$avgSteps[is.na(activityNew$steps)]</code></pre>
+</div>
+<div id="make-a-histogram-of-the-total-number-of-steps-taken-each-day-and-calculate-and-report-the-mean-and-median-total-number-of-steps-taken-per-day.-do-these-values-differ-from-the-estimates-from-the-first-part-of-the-assignment-what-is-the-impact-of-imputing-missing-data-on-the-estimates-of-the-total-daily-number-of-steps" class="section level4">
+<h4>4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?</h4>
+<pre class="r"><code>activityNewByDay &lt;- summarise(group_by(activityNew, date), totalSteps = sum(steps))
+hist(activityNewByDay$totalSteps, main = &quot;Histogram of the total steps taken each day&quot;, xlab = &quot;Total steps&quot;)</code></pre>
+<p><img src="PA1_template_files/figure-html/unnamed-chunk-8.png" alt="plot of chunk unnamed-chunk-8" /></p>
+<pre class="r"><code>mean(activityNewByDay$totalSteps)</code></pre>
+<pre><code>## [1] 10766</code></pre>
+<pre class="r"><code>median(activityNewByDay$totalSteps)</code></pre>
+<pre><code>## [1] 10766</code></pre>
+<p>The values differ from the estimates from the first part of assignment and both mean and median has increased. The histogram of total number of steps taken each day has also become more normal.</p>
+</div>
+</div>
+<div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
+<h2>Are there differences in activity patterns between weekdays and weekends?</h2>
+<div id="create-a-new-factor-variable-in-the-dataset-with-two-levels---weekday-and-weekend-indicating-whether-a-given-date-is-a-weekday-or-weekend-day." class="section level4">
+<h4>1. Create a new factor variable in the dataset with two levels - “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.</h4>
+<pre class="r"><code>activityNew &lt;- mutate(activityNew, daytype = as.factor(ifelse(weekdays(as.Date(date)) %in% c(&quot;Saturday&quot;,&quot;Sunday&quot;),&quot;weekend&quot;,&quot;weekday&quot;)))</code></pre>
+</div>
+<div id="make-a-panel-plot-containing-a-time-series-plot-i.e.type-l-of-the-5-minute-interval-x-axis-and-the-average-number-of-steps-taken-averaged-across-all-weekday-days-or-weekend-days-y-axis.-see-the-readme-file-in-the-github-repository-to-see-an-example-of-what-this-plot-should-look-like-using-simulated-data." class="section level4">
+<h4>2. Make a panel plot containing a time series plot (i.e. type = “l”) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.</h4>
+<p>Summarise the data based on the newly created factor variable to indicate day type and interval. Plot the graph to show average number of steps taken for weekdays and weekends.</p>
+<pre class="r"><code>activityDay &lt;- summarise(group_by(activityNew, daytype, interval), avgSteps = mean(steps))
+
+g &lt;- ggplot(activityDay, aes(interval, avgSteps)) + geom_line(size = 1) +
+        facet_wrap(~ daytype, nrow = 2, ncol = 1) +
+        labs(x = &quot;Interval&quot;) + labs(y = &quot;Average steps&quot;)
+        
+print(g)</code></pre>
+<p><img src="PA1_template_files/figure-html/unnamed-chunk-10.png" alt="plot of chunk unnamed-chunk-10" /></p>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
